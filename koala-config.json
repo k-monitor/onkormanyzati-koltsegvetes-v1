@@ -1,0 +1,19 @@
+{
+	"ignores": ["*.css", "*.js", "assets/less/include", "_site", "_work"],
+	"mappings": [
+		{
+			"src": "assets/less",
+		 	"dest": "assets/css"
+		 }
+	],
+	"options": {
+		"outputStyle": "compress",
+		"lineComments": false,
+		"debugInfo": false,
+		"strictMath": false,
+		"strictUnits": false,
+		"sourceMap": false,
+        "autoprefix": true,
+        "autoprefixConfig" : "> 1%, last 2 versions, Firefox ESR, Opera 12.1"
+	}
+}

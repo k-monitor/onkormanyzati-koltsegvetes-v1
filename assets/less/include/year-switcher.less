@@ -1,0 +1,43 @@
+#year-switcher {
+	margin: 0;
+	margin-right: 1rem;
+	list-style: none;
+	padding: 0;
+
+	@media (max-width: @md) {
+		display: flex;
+		flex-direction: column;
+	}
+
+	li {
+		display: inline-block;
+		margin: .25rem;
+		padding: 0;
+
+		a {
+			border: 1px solid #70ac45;
+			border-radius: .5rem;
+			display: inline-block;
+			font-size: 1.25rem;
+
+			@media (max-width: @md) {
+				font-size: 1rem;
+			}
+
+			@media (max-width: @sm) {
+				font-size: .8rem;
+			}
+
+			letter-spacing: 1px;
+			padding: .25rem 1rem;
+			text-decoration: none;
+		}
+
+		&.active, &:hover {
+			a {
+				background-color: #eee;
+				color: #70ac45;
+			}
+		}
+	}
+}

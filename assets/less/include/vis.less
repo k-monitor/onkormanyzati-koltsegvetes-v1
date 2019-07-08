@@ -1,0 +1,36 @@
+/*
+	Költségvetés vizualizáció
+	Copyright (C) 2019 DeepData Ltd.
+*/
+
+#svg-container {
+	height: 350px;
+	width: 100%;
+
+	.back,
+	.bar {
+		opacity: 1.0;
+		stroke: white;
+	}
+
+	.back:hover,
+	.bar:hover,
+	.bar.hover {
+		opacity: 0.75;
+	}
+
+	.curve {
+		fill: none;
+	}
+
+	.label text {
+		font-family: @condensed-font;
+		font-weight: 700;
+		fill: white;
+	}
+
+	.label:hover text,
+	.label.hover text {
+		font-weight: 900;
+	}
+}

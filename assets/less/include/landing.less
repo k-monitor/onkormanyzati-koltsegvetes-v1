@@ -1,0 +1,140 @@
+/*
+	Költségvetés vizualizáció
+	Copyright (C) 2019 DeepData Ltd.
+*/
+
+body.noscroll {
+	overflow: hidden;
+}
+
+#about, #welcome, #hint, #overlay-container {
+	display: flex;
+	overflow: scroll;
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+
+	align-items: center; // need for vertical centering on Safari
+}
+
+#overlay {
+	fill: black;
+	fill-opacity: .75;
+}
+
+.modal {
+	background-attachment: fixed;
+	background-color: #058B44;
+	body[data-year="2019"] & {
+		background-color: #1D7E7D;
+	}
+	background-position: left center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	border: 1px solid white;
+	border-radius: 16px;
+	margin: auto;
+	padding: 40px;
+	max-width: 900px;
+	min-width: 50%; // Safari needs width
+
+	.exit {
+		cursor: pointer;
+		float: right;
+		font-size: 2rem;
+
+		&:hover {
+			opacity: .75;
+		}
+	}
+
+	a {
+		color: white;
+		font-weight: bold;
+	}
+
+	h1 {
+		font-family: @condensed-font;
+		font-size: 2.5rem;
+		margin: 0 0 25px;
+	}
+
+	p {
+		font-size: 0.9rem;
+		line-height: 1.5;
+		margin: 0 0 15px 0;
+		text-align: justify;
+	}
+
+	#signo {
+		max-height: 65px;
+		padding: 5px 0;
+	}
+
+	.text {
+		width: 75%; // Safari needs width
+	}
+
+	.face.beside-text {
+		background-repeat: no-repeat;
+		background-size: contain;
+		margin-left: 5%;
+		width: 20%; // Safari needs width
+	}
+
+	.face.beside-signo {
+		display: none;
+		float: right;
+	}
+
+	.btn-container {
+		text-align: center;
+	}
+
+	.btn {
+		background-color: @mode-switcher;
+		&:hover { background-color: darken(@mode-switcher, 10%); }
+
+		body[data-year="2019"] & {
+			background-color: @mode-switcher-2019;
+			&:hover { background-color: darken(@mode-switcher-2019, 10%); }
+		}
+
+		border-radius: 10px;
+		cursor: pointer;
+		display: inline-block;
+		font-family: @condensed-font;
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin: 20px auto 0 auto;
+		padding: 10px;
+		text-align: center;
+		text-transform: uppercase;
+	}
+}
+
+#about .modal {
+	background-color:rgba(5, 139, 68, .5); // #058B44
+	body[data-year="2019"] & {
+		background-color: fade(#1D7E7D, 50%);
+	}
+	p {
+		padding-right: 50px;
+	}
+}
+
+#welcome .modal {
+	background-color: #058B44;
+	background-image: url('../img/alt-bg.png');
+
+	body[data-year="2019"] & {
+		background-color: #1D7E7D;
+		background-image: url('../img/alt-bg2019.png');
+	}
+}
+
+#hint h1 {
+	text-align: center;
+}

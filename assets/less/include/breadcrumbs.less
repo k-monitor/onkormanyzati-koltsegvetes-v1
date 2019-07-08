@@ -1,0 +1,55 @@
+/*
+	Költségvetés vizualizáció
+	Copyright (C) 2019 DeepData Ltd.
+*/
+
+#breadcrumbs {
+	background-color: rgba(255,255,255,.25);
+	font-family: @font;
+	font-weight: 700;
+	line-height: normal;
+	margin-bottom: 20px;
+	padding: 15px;
+
+	.breadcrumb {
+		color: white;
+		cursor: pointer;
+		font-size: 16px;
+
+		&:first-child {
+			text-transform: uppercase;
+		}
+
+		&:not(:last-child) {
+			opacity: .75;
+			transition: opacity 0.1s ease;
+
+			&:hover {
+				opacity: 1;
+			}
+		}
+
+		&:not(:last-child):after {
+			content: ' | ';
+		}
+
+		&:last-child {
+			cursor: auto;
+			font-weight: 900;
+		}
+
+		&:nth-child(2),
+		&.subtotal {
+			white-space: nowrap;
+		}
+
+		// add fix wrap after 2nd item (main category)
+		&:nth-child(3):before {
+			content: '';
+			display: block;
+		}
+		&.subtotal {
+			align-self: flex-end;
+		}
+	}
+}

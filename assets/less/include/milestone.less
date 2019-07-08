@@ -1,0 +1,137 @@
+/*
+	Költségvetés vizualizáció
+	Copyright (C) 2019 DeepData Ltd.
+*/
+
+#bottom-cells {
+	padding: 0 20px;
+	justify-content: space-between;
+}
+
+.bottom-cell {
+	margin: 20px;
+}
+
+#bottom-cells {
+	.column();
+	flex-wrap: nowrap;
+}
+
+#comparison {
+	width: 100%;
+}
+
+#milestone-pic {
+	height: initial;
+	padding-top: 62.5%;
+	width: 100%;
+}
+
+@media (min-width: @md) {
+	#bottom-cells {
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
+	#comparison {
+		margin-top: 20px;
+		min-width: 220px;
+		width: 220px;
+	}
+
+	#milestone-pic {
+		padding-top: 0;
+		width: 200px;
+		height: 125px; // w * 62.5% (8:5 Aspect Ratio)
+	}
+}
+
+
+@media (min-width: @lg) {
+	#comparison {
+		min-width: 250px;
+		width: 250px;
+		height: 172px;
+		overflow-y: hidden;
+	}
+
+	#milestone-pic {
+		width: 275px;
+		height: 172px; // w * 62.5% (8:5 Aspect Ratio)
+	}
+}
+
+@media (min-width: @xl) {
+	#bottom-cells {
+		flex-wrap: nowrap;
+	}
+}
+
+@media (min-width: 1500px) {
+	#comparison {
+		min-width: 300px;
+		width: 300px;
+		height: 200px;
+		overflow-y: hidden;
+	}
+
+	#milestone-pic {
+		width: 320px;
+		height: 200px; // w * 62.5% (8:5 Aspect Ratio)
+	}
+}
+
+#comparison {
+	background-color: @comparison-bg;
+	border-radius: 5px;
+	color: black;
+	justify-content: space-evenly;
+	margin: 0 auto;
+	//padding: 20px 0px;
+	text-align: center;
+
+	.info-icon {
+		color: @info-icon;
+		font-size: 1.75rem;
+		margin-top: 10px;
+	}
+
+	.text {
+		margin: 0 15px 10px;
+	}
+
+	.value {
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin: 15px 0px;
+	}
+
+	&.has-selected {
+		&, .info-icon {
+			color: white !important;
+		}
+	}
+}
+
+#milestone-pic {
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+#milestone-text {
+	line-height: 1.75;
+	font-size: 0.9rem;
+
+	p {
+		margin: 0;
+	}
+}
+
+.bottom-cell {
+	h4 {
+		font-family: @condensed-font;
+		font-size: 0.9rem;
+		margin: 10px 0px;
+	}
+}

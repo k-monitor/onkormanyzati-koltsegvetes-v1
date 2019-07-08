@@ -1,0 +1,251 @@
+---
+# Költségvetés vizualizáció
+# Copyright (C) 2019 DeepData Ltd.
+---
+<!DOCTYPE html>
+<html lang="hu" id="htmlTop">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+	<title>Költségvetés {{ page.year }} | Mintaváros Önkormányzata</title>
+	<meta property="og:title" content="Költségvetés {{ page.year }}">
+	<meta property="og:site_name" content="Mintaváros Önkormányzata">
+	<meta property="og:description" name="description" content="Mintaváros költségvetése könnyen befogadható és értelmezhető módon, ahol néhány kattintással mindenki láthatja, miből, mennyit és mire költünk.">
+	<link rel="canonical" href="https://mintavaros.deepdata.hu/">
+	<meta property="og:url" content="https://mintavaros.deepdata.hu/">
+	<meta property="og:image" content="https://mintavaros.deepdata.hu/assets/img/og-image.png">
+	<meta property="og:image:type" content="image/png">
+	<meta property="og:image:width" content="500">
+	<meta property="og:image:height" content="500">
+	<meta property="og:type" content="website">
+	<meta name="format-detection" content="telephone=no">
+
+	<!--
+	<link rel="shortcut icon" href="...">
+	<link rel="apple-touch-icon-precomposed" href="...">
+	-->
+
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto:500&subset=latin-ext" rel="stylesheet">
+	<link rel="stylesheet" href="/assets/css/app.css">
+</head>
+
+<body data-year="{{ page.year }}" data-bind="css: { 'noscroll': showOverlay }">
+	<main class="column">
+		<header class="row align-center">
+			<ul id="year-switcher">
+				<li {% if page.year == 2018 %}class="active"{% endif %}><a href="/2018/?nowelcome">2018</a></li>
+				<li {% if page.year == 2019 %}class="active"{% endif %}><a href="/?nowelcome">2019</a></li>
+			</ul>
+			<h1 class="stretch">Költségvetés {{ page.year }}</h1>
+			<a href="/" _target="_blank">
+				<img src="/assets/img/logo.png" alt="Önkormányzat logója" height="79" width="181">
+			</a>
+		</header>
+
+		<div id="loading" data-bind="visible: loading">
+			<div class="spinner">
+				<div class="bounce1"></div>
+				<div class="bounce2"></div>
+				<div class="bounce3"></div>
+			</div>
+		</div>
+
+		<div class="stretch row column-on-mobile" style="display: none" data-bind="visible: !loading()">
+			<aside id="menu" data-bind="css: { 'has-selected': hasSelected() }">
+				<div id="total" data-bind="click: function() { upTill(0) }">
+					Teljes költségvetés
+					<br>
+					<span class="value" data-bind="html: huf(total())"></span>
+				</div>
+				<div class="items" data-bind="foreach: menu, css: { 'has-selected': hasSelected() }">
+					<div class="item" data-bind="click: $parent.from, style: { backgroundColor: $parent.colorById($data.id), padding: $parent.menuItemPadding($data) }, css: { 'selected': $parent.isSelected($data.id) }">
+						<span data-bind="text: name, attr: { title: name }"></span>
+						<br>
+						<span class="value" data-bind="html: huf(value)"></span>
+					</div>
+				</div>
+				<div class="mode-switcher" id="mode-switcher-left">
+					<div class="btn" data-bind="click: switchMode, visible: mode() == MODE_FUNC">Váltás közgazdasági nézetre</div>
+					<div class="btn" data-bind="click: switchMode, visible: mode() == MODE_ECON">Váltás funkcionális nézetre</div>
+					<div class="btn sm" data-bind="click: clickAbout">Mi ez? <i class="fa fa-question-circle"></i></div>
+				</div>
+			</aside>
+			<div class="stretch column">
+				<div class="stretch row">
+					<div id="visualization" class="stretch">
+						<div>
+							<nav class="row" id="breadcrumbs" data-bind="style: { backgroundColor: colorOfParent() }">
+								<div class="stretch" data-bind="foreach: stack">
+									<span class="breadcrumb" data-bind="click: function() { $parent.upTill($index()) }, text: name"></span>
+								</div>
+								<div class="breadcrumb subtotal" data-bind="html: huf(subTotal())"></div>
+							</nav>
+							<div id="svg-container">
+								<svg width="100%" height="100%">
+
+									<rect x="0" y="0" height="100%" data-bind="attr: { width: barWidthPc }" style="fill: white" width="0" />
+
+									<svg class="bars" x="0" y="0" height="100%" data-bind="attr: { width: barWidthPc }, foreach: visibleNodes">
+										<rect class="bar" width="100%" data-bind="attr: { y: $parent.barY($index()), height: $parent.barHeight($data) }, click: $parent.down, css: { hover: $parent.cursor() == $index() }, event: { mouseover: function() { $parent.cursor($index()); }, mouseout: function() { $parent.cursor(-1); } }, style: { cursor: children.length > 0 ? 'pointer' : 'auto', fill: $parent.color($data, $index()), fillOpacity: $parent.opacity($data,$index()) }" />
+									</svg>
+
+									<svg class="labels" y="0" height="100%" data-bind="attr: { width: labelWidthPc, x: labelXPc }, foreach: visibleNodes">
+										<g class="label" data-bind="click: $parent.down, css: { hover: $parent.cursor() == $index() }, event: { mouseover: function() { $parent.cursor($index()); }, mouseout: function() { $parent.cursor(-1); } }">
+											<title data-bind="text: name"></title>
+											<text class="name" dominant-baseline="middle" x="0" data-bind="attr: { y: $root.labelY($data,$index()) }, style: { cursor: children.length > 0 ? 'pointer' : 'auto' }, text: $root.label($data.name)"></text>
+											<text class="value" dominant-baseline="middle" text-anchor="end" x="98%" data-bind="attr: { y: $root.labelY($data,$index()) }, style: { cursor: children.length > 0 ? 'pointer' : 'auto' }, text: huf(value)"></text>
+										</g>
+									</svg>
+
+									<g class="curves" data-bind="foreach: visibleNodes">
+										<svg y="0%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" data-bind="attr: { width: $root.curveWidthPc, x: $root.curveXPc }">
+											<path class="curve" data-bind="attr: { d: $parent.curveD($data,$index()) }" style="stroke: white" vector-effect="non-scaling-stroke"></path>
+										</svg>
+									</g>
+
+									<g class="curves" data-bind="foreach: visibleNodes">
+										<svg y="0%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" data-bind="attr: { width: $root.curveWidthPc, x: $root.curveXPc }">
+											<path class="curve" data-bind="attr: { d: $parent.curveD($data,$index()) }, css: { hover: $parent.cursor() == $index() }, event: { mouseover: function() { $parent.cursor($index()); }, mouseout: function() { $parent.cursor(-1); } }, style: { stroke: $parent.color($data, $index()), strokeOpacity: $parent.opacity($data,$index()) }"
+											 vector-effect="non-scaling-stroke"></path>
+										</svg>
+									</g>
+
+									<rect class="back" x="0" y="0" height="100%" data-bind="attr: { width: backBarWidthPc }, click: up, visible: stack().length > 1, style: { fill: colorOfParent }" width="0" />
+								</svg>
+							</div>
+						</div>
+					</div>
+					<div class="mode-switcher" id="mode-switcher-right">
+						<!-- inserted at runtime to avoid redundancy -->
+						<!-- edit texts at #mode-switcher-left -->
+					</div>
+				</div>
+				<div class="column">
+					<div id="bottom-cells" class="row">
+						<div class="bottom-cell column">
+							<div id="comparison" class="column align-center" data-bind="css: { 'has-selected': hasSelected() }, style: { backgroundColor: colorOfParent() }">
+								<i class="fas fa-info-circle info-icon" data-bind="style: { color: colorOfParent() }"></i>
+								<div class="value" data-bind="text: huf(1 == stack().length ? total() : stack()[1].value)"></div>
+								<div class="text" data-bind="text: milestone().compare"></div>
+							</div>
+						</div>
+						<div class="bottom-cell">
+							<div id="milestone-pic" data-bind="style: { backgroundImage: milestone().image }">
+							</div>
+							<h4 data-bind="text: milestone().title"></h4>
+						</div>
+						<div id="milestone-text" class="bottom-cell stretch">
+							<p data-bind="text: milestone().text"></p>
+						</div>
+					</div>
+					<div class="row" id="logos">
+						<div class="stretch">
+							<a href="javascript:void(0)" target="_blank">
+								<img src="/assets/img/mintavaros-square-logo.png" alt="Mintaváros Önkormányzata">
+							</a>
+							<a href="http://www.kfib.hu/" target="_blank">
+								<img src="/assets/img/kfib-logo.png" alt="Költségvetési Felelősségi Intézet Budapest">
+							</a>
+							<a href="http://k-monitor.hu/" target="_blank">
+								<img src="/assets/img/k-monitor-logo.png" alt="K-Monitor">
+							</a>
+						</div>
+						<a href="https://www.deepdata.hu/" target="_blank">
+							<img class="small" src="/assets/img/deepdata-logo.png" alt="DeepData Kft.">
+						</a>
+					</div>
+
+					<p id="license">
+						<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons Licenc" style="border-width:0;" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+						Ez a Mű a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Nevezd meg! - Így add tovább! 4.0 Nemzetközi Licenc</a> feltételeinek megfelelően felhasználható.
+					</p>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<svg id="overlay-container" width="100%" height="100%" data-bind="visible: showOverlay">
+		<defs>
+			<mask id="hole" data-bind="with: overlayHole">
+				<rect width="100%" height="100%" fill="white" />
+				<rect fill="black" rx="10" ry="10" data-bind="attr: { x: x, y: y, width: width, height: height }" width="0" height="0" />
+			</mask>
+		</defs>
+		<rect id="overlay" x="0" y="0" width="100%" height="100%" mask="url(#hole)" />
+	</svg>
+
+	<div id="hint" style="display:none" data-bind="visible: showHint, click: overlayClick">
+		<div class="modal">
+			<i class="fas fa-times-circle exit"></i>
+			<h1>Kattints valamelyik kategóriára!</h1>
+		</div>
+	</div>
+
+	<div id="welcome" style="display:none" data-bind="visible: showWelcome">
+		<div class="modal">
+			<i class="fas fa-times-circle exit" data-bind="click: closeWelcome"></i>
+			<h1>TISZTELT MINTAVÁROSI POLGÁROK!</h1>
+			<div class="flex row">
+				<div class="text">
+					<p>
+						Egy önkormányzat feladatai sokrétűek, állampolgári szemmel nehezen áttekinthetőek. Mintavárosban azonban nincs takargatni valónk, ezért úgy döntöttünk, hogy a modern technika segítségével bemutatjuk Önökek településünk gazdálkodását úgy, ahogyan azt korábban csak kevesek láthatták!
+					</p>
+					<p>
+						A XXI. század embere joggal várhatja el egy önkormányzattól, hogy az interneten is utánanézhessen, mennyit költ a település oktatásra, egészségügyre vagy épp a parkok rendben tartására. A helyi demokráciára is igaz, kettőn áll a vásár. A tisztességes településvezetés mellé tájékozott polgárok is kellenek, akik nyomon követik a döntések ésszerűségét. A közpénzek átlátható felhasználásáért küzdő K-Monitor és a Költségvetési Felelősségi Intézet szakmai segítségével létrehozott alkalmazás, amit pillanatokon belül használatba vehet, Magyarországon elsőként arra törekszik, hogy mindenki számára könnyen befogadható és értelmezhető képet adjon az önkormányzat gazdálkodásáról.
+					</p>
+					<p>
+						A weboldal testre szabható és egyszerűen feltölthető bármely település adataival. Reméljük, Mintaváros igyekezete ragadós lesz és egyre többen teszik meg ezt az egyáltalán nem megerőltető, mégis fontos lépést az átláthatóság felé.
+					</p>
+					<p>&nbsp;</p>
+					<div class="flex row">
+						<div>
+							<p>Kellemes böngészést kívánok,</p>
+							<img id="signo" src="/assets/img/signo.png" alt="Karácsony Gergely">
+							<p>
+								<em>Példa Imre,</em>
+								<br>
+								<small>Mintaváros polgármestere</small>
+							</p>
+						</div>
+						<div class="stretch">
+							<img class="face beside-signo" src="/assets/img/face.png" alt="Karácsony Gergely" width="264" height="264">
+						</div>
+					</div>
+					<div class="btn-container">
+						<div class="btn" data-bind="click: closeWelcome">Kipróbálom!</div>
+					</div>
+				</div>
+				<div class="face beside-text" style="background-image: url(assets/img/face.png);"></div>
+			</div>
+		</div>
+	</div>
+
+	<div id="about" style="display:none" data-bind="visible: showAbout">
+		<div class="modal" data-bind="visible: showAbout" style="display:none">
+			<i class="fas fa-times-circle exit" data-bind="click: closeAbout"></i>
+			<h1>MI EZ?</h1>
+			<p>Mintaváros (elképzelt) 2018. évi költségvetési kiadásait – a technikai, pénzügyi tételektől megtisztítva – két nézetben mutatjuk be.</p>
+			<p>A <strong>FUNKCIONÁLIS NÉZET</strong> a költségvetési kiadásokat osztályozza, azok társadalmi-gazdasági cél szerinti összetételét mutatja. Az általános közszolgáltatásoktól a védelmi kiadásokig összesen 10 kategóriában tartalmazza a kerület működésének területeit.</p>
+			<p>A <strong>KÖZGAZDASÁGI NÉZET</strong> ezzel szemben működési vagy felhalmozási jellegük alapján mutatja meg a kiadások összetételét, hogy mekkora a személyi kiadások, a kapcsolódó munkáltatói járulékok, a dologi kiadások, a beruházási és felújítási kiadások, az államháztartáson belüli és kívüli támogatások, transzferek összege Mintaváros költségvetésében.</p>
+			<p>Az alkalmazás motorját a <a href="http://k-monitor.hu/" target="_blank">K-Monitor</a> fejlesztette és tette közzé <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC lincenccel</a>. Az alkalmazás jelenlegi grafikai kialakítása a főváros XIV. kerületének önkormányzata megbízásából készült verzióra támaszkodik, amelyet szintén CC licenccel tettek hozzáférhetővé. Az alkalmazás forráskódja ugyanezen licencek használata mellett, a projekt megnevezésével ingyenesen felhasználható. Az alkalmazás átvételéhez kérheti a K-Monitor segítségét, az erről szóló tájékoztató <a href="http://adatbazis.k-monitor.hu/files/page/koko.pdf" target="_blank">itt olvasható</a>.</p>
+		</div>
+	</div>
+
+	<script src="/assets/js/jquery.min.js"></script>
+	<script src="/assets/js/knockout-min.js"></script>
+	<script src="/assets/js/papaparse.min.js"></script>
+	<script src="/assets/js/app.js"></script>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133449148-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+	  gtag('config', 'UA-133449148-1');
+	</script>
+</body>
+
+</html>

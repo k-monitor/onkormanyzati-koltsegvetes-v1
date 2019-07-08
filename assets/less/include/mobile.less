@@ -1,0 +1,110 @@
+/*
+	Költségvetés vizualizáció
+	Copyright (C) 2019 DeepData Ltd.
+*/
+
+/*@media (max-width: @xl) {
+	header .center-fix {
+		display: none;
+	}
+}*/
+
+@media (max-width: @lg) {
+	header {
+		border-bottom-width: 12px;
+
+		h1 {
+			font-size: 2rem;
+		}
+		img {
+			width: 100px;
+			height: auto;
+		}
+	}
+
+	#mode-switcher-left {
+		&, & .info {
+			display: block;
+		}
+	}
+
+	#mode-switcher-right {
+		display: none;
+	}
+}
+
+@media (max-width: @md) {
+	.column-on-mobile {
+		flex-direction: column;
+	}
+
+	header {
+		border-bottom-width: 8px;
+
+		h1 {
+			font-size: 1.75rem;
+			text-align: left;
+		}
+
+		img {
+			margin: 0 5px;
+			width: 60px;
+			height: auto;
+		}
+	}
+
+	#menu {
+		width: 100%;
+
+		&.has-selected {
+			display: none;
+		}
+	}
+
+	#mode-switcher-left.mode-switcher {
+		margin: 40px;
+		max-width: 100%;
+
+		.btn {
+			margin: 0;
+			margin-bottom: 20px;
+			padding: 20px;
+
+			&.sm {
+				width: inherit;
+			}
+		}
+	}
+
+	#visualization {
+		min-height: 0px;
+	}
+
+	#welcome .text {
+		width: 100%; // Safari needs width
+	}
+
+	#welcome .face {
+		height: 100px;
+		width: 100px;
+
+		&.beside-text { display: none; }
+		&.beside-signo { display: block; }
+	}
+}
+
+@media (max-width: @sm) {
+	header {
+		h1 {
+			font-size: 1.25rem;
+		}
+		img {
+			width: 50px;
+			height: auto;
+		}
+	}
+
+	#welcome .face {
+		display: none;
+	}
+}
